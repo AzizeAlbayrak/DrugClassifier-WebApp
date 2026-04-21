@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Drug200 Sınıflandırma</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --card: rgba(255, 255, 255, 0.06);
+        --card2: rgba(255, 255, 255, 0.08);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.68);
+        --border: rgba(255, 255, 255, 0.14);
+        --accent: #7c5cff;
+        --accent2: #23c5ff;
+        --danger: #ff4d6d;
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
+          "Segoe UI Emoji";
+        color: var(--text);
+        background:
+          radial-gradient(1200px 700px at 20% 10%, rgba(124, 92, 255, 0.25), transparent 60%),
+          radial-gradient(900px 600px at 80% 20%, rgba(35, 197, 255, 0.18), transparent 55%),
+          radial-gradient(900px 700px at 50% 100%, rgba(124, 92, 255, 0.12), transparent 60%),
+          var(--bg);
+        display: grid;
+        place-items: center;
+        padding: 28px 16px;
+      }
+
+      .container {
+        width: min(980px, 100%);
+        display: grid;
+        gap: 16px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 12px;
+        padding: 18px 18px 10px;
+      }
+
+      .title {
+        display: grid;
+        gap: 6px;
+      }
+      .title h1 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: 0.2px;
+      }
+      .title p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .pill {
+        border: 1px solid var(--border);
+        background: linear-gradient(135deg, rgba(124, 92, 255, 0.22), rgba(35, 197, 255, 0.10));
+        padding: 10px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        color: var(--muted);
+        backdrop-filter: blur(10px);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 16px;
+      }
+
+      @media (max-width: 880px) {
+        .grid { grid-template-columns: 1fr; }
+      }
+
+      .card {
+        background: linear-gradient(180deg, var(--card), rgba(255, 255, 255, 0.03));
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .card .card-hd {
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+      .card .card-hd h2 {
+        margin: 0;
+        font-size: 14px;
+        letter-spacing: 0.2px;
+      }
+      .card .card-hd span {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      form {
+        padding: 16px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      @media (max-width: 520px) {
+        .row { grid-template-columns: 1fr; }
+      }
+
+      label {
+        display: grid;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      input, select {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(10, 14, 28, 0.55);
+        color: var(--text);
+        padding: 10px 12px;
+        outline: none;
+        transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+      }
+      input:focus, select:focus {
+        border-color: rgba(124, 92, 255, 0.65);
+        box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.12);
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: flex-end;
+        padding-top: 6px;
+      }
+
+      button {
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: linear-gradient(135deg, rgba(124, 92, 255, 0.85), rgba(35, 197, 255, 0.45));
+        color: white;
+        padding: 10px 14px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        transition: transform 120ms ease, filter 120ms ease;
+      }
+      button:hover { transform: translateY(-1px); filter: brightness(1.05); }
+      button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+      .ghost {
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .note {
+        padding: 12px 16px 16px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+      .note code {
+        background: rgba(255, 255, 255, 0.08);
+        padding: 2px 6px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        color: rgba(255, 255, 255, 0.86);
+      }
+
+      .result {
+        padding: 16px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .big {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: linear-gradient(180deg, var(--card2), rgba(255, 255, 255, 0.03));
+      }
+      .big .k {
+        color: var(--muted);
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
+      .big .v {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+      }
+      .big .sub {
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.35;
+      }
+      .warn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 77, 109, 0.45);
+        background: rgba(255, 77, 109, 0.14);
+        color: rgba(255, 255, 255, 0.92);
+        font-weight: 700;
+        letter-spacing: 0.2px;
+      }
+
+      .bars {
+        display: grid;
+        gap: 10px;
+      }
+      .bar {
+        display: grid;
+        gap: 6px;
+      }
+      .bar .top {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .track {
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        overflow: hidden;
+      }
+      .fill {
+        height: 100%;
+        width: 0%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, rgba(124, 92, 255, 0.95), rgba(35, 197, 255, 0.75));
+        transition: width 300ms ease;
+      }
+
+      .error {
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 77, 109, 0.35);
+        background: rgba(255, 77, 109, 0.10);
+        color: rgba(255, 255, 255, 0.88);
+        font-size: 13px;
+        line-height: 1.4;
+        display: none;
+      }
+
+      .footer {
+        padding: 14px 18px 18px;
+        color: var(--muted);
+        font-size: 12px;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      a { color: rgba(35, 197, 255, 0.85); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="header">
+          <div class="title">
+            <h1>Drug200 Sınıflandırma</h1>
+            <p>FastAPI + PyTorch ile tek istekle tahmin. Girdi özellikleri: <code>Age, Sex, BP, Cholesterol, Na_to_K</code>.</p>
+          </div>
+          <div class="pill" id="statusPill">Bağlantı: kontrol ediliyor…</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="card-hd">
+            <h2>Girdi</h2>
+            <span>API: <code>/api/predict</code></span>
+          </div>
+
+          <form id="predictForm">
+            <div class="row">
+              <label>
+                Yaş (Age)
+                <input id="age" name="age" type="number" min="0" max="120" step="1" value="45" required />
+              </label>
+              <label>
+                Na_to_K
+                <input id="na_to_k" name="na_to_k" type="number" min="0" step="0.01" value="13.5" required />
+              </label>
+            </div>
+
+            <div class="row">
+              <label>
+                Cinsiyet (Sex)
+                <select id="sex" name="sex" required>
+                  <option value="0">Kadın</option>
+                  <option value="1">Erkek</option>
+                </select>
+              </label>
+              <label>
+                Tansiyon (BP)
+                <select id="bp" name="bp" required>
+                  <option value="0">High</option>
+                  <option value="1">Low</option>
+                  <option value="2" selected>Normal</option>
+                </select>
+              </label>
+            </div>
+
+            <label>
+              Kolesterol (Cholesterol)
+              <select id="cholesterol" name="cholesterol" required>
+                <option value="0">High</option>
+                <option value="1" selected>Normal</option>
+              </select>
+            </label>
+
+            <div class="actions">
+              <button type="button" class="ghost" id="fillExample">Örnek Doldur</button>
+              <button type="submit" id="submitBtn">Tahmin Et</button>
+            </div>
+          </form>
+
+          <div class="note">
+            Not: Kategorik alanlar backend’de şu şekilde sayısallaştırılıyor:
+            <code>Sex(0=Kadın,1=Erkek)</code>, <code>BP(High=0,Low=1,Normal=2)</code>, <code>Chol(High=0,Normal=1)</code>.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hd">
+            <h2>Sonuç</h2>
+            <span>Olasılıklar (softmax)</span>
+          </div>
+
+          <div class="result">
+            <div class="error" id="errorBox"></div>
+
+            <div class="big">
+              <div>
+                <div class="k">Tahmin</div>
+                <div class="v" id="predLabel">—</div>
+                <div class="sub" id="predWarning" style="display:none;"></div>
+              </div>
+              <div style="text-align:right">
+                <div class="k">Index</div>
+                <div class="v" id="predIndex">—</div>
+              </div>
+            </div>
+
+            <div class="bars" id="bars"></div>
+          </div>
+
+          <div class="footer">
+            <span>İpucu: Uygulamayı çalıştırınca bu sayfa otomatik servis edilir.</span>
+            <span><a href="/docs" target="_blank" rel="noreferrer">Swagger UI</a></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const statusPill = document.getElementById("statusPill");
+      const form = document.getElementById("predictForm");
+      const submitBtn = document.getElementById("submitBtn");
+      const errorBox = document.getElementById("errorBox");
+      const predLabel = document.getElementById("predLabel");
+      const predIndex = document.getElementById("predIndex");
+      const predWarning = document.getElementById("predWarning");
+      const bars = document.getElementById("bars");
+
+      const exampleBtn = document.getElementById("fillExample");
+      exampleBtn.addEventListener("click", () => {
+        document.getElementById("age").value = 23;
+        document.getElementById("na_to_k").value = 25.4;
+        document.getElementById("sex").value = "1";
+        document.getElementById("bp").value = "0";
+        document.getElementById("cholesterol").value = "0";
+      });
+
+      function setStatus(ok, text) {
+        statusPill.textContent = text;
+        statusPill.style.borderColor = ok ? "rgba(35,197,255,0.35)" : "rgba(255,77,109,0.35)";
+        statusPill.style.background = ok
+          ? "linear-gradient(135deg, rgba(35,197,255,0.18), rgba(124,92,255,0.10))"
+          : "rgba(255,77,109,0.10)";
+      }
+
+      async function checkHealth() {
+        try {
+          const r = await fetch("/health");
+          if (!r.ok) throw new Error("health not ok");
+          setStatus(true, "Bağlantı: hazır");
+        } catch (e) {
+          setStatus(false, "Bağlantı: yok (API çalışmıyor olabilir)");
+        }
+      }
+
+      function showError(msg) {
+        errorBox.style.display = "block";
+        errorBox.textContent = msg;
+      }
+
+      function clearError() {
+        errorBox.style.display = "none";
+        errorBox.textContent = "";
+      }
+
+      function setDrugWarning(prediction) {
+        const label = String(prediction?.label ?? "");
+        const idx = Number(prediction?.index);
+        const isDrugY = label.trim().toLowerCase() === "drugy" || idx === 0;
+        if (isDrugY) {
+          predWarning.style.display = "inline-flex";
+          predWarning.className = "sub warn";
+          predWarning.textContent = "(Uyuşturucu/Riskli Madde İçerir)";
+        } else {
+          predWarning.style.display = "none";
+          predWarning.className = "sub";
+          predWarning.textContent = "";
+        }
+      }
+
+      function renderBars(items) {
+        bars.innerHTML = "";
+        for (const it of items) {
+          const p = Math.max(0, Math.min(1, Number(it.prob)));
+          const row = document.createElement("div");
+          row.className = "bar";
+          row.innerHTML = `
+            <div class="top">
+              <span>${it.label}</span>
+              <span>${(p * 100).toFixed(2)}%</span>
+            </div>
+            <div class="track"><div class="fill"></div></div>
+          `;
+          bars.appendChild(row);
+          requestAnimationFrame(() => {
+            row.querySelector(".fill").style.width = `${(p * 100).toFixed(2)}%`;
+          });
+        }
+      }
+
+      form.addEventListener("submit", async (ev) => {
+        ev.preventDefault();
+        clearError();
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Hesaplanıyor…";
+
+        const payload = {
+          age: Number(document.getElementById("age").value),
+          na_to_k: Number(document.getElementById("na_to_k").value),
+          sex: Number(document.getElementById("sex").value),
+          bp: Number(document.getElementById("bp").value),
+          cholesterol: Number(document.getElementById("cholesterol").value),
+        };
+
+        try {
+          const r = await fetch("/api/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await r.json().catch(() => ({}));
+          if (!r.ok) {
+            const detail = data?.detail ? JSON.stringify(data.detail) : "Bilinmeyen hata";
+            throw new Error(detail);
+          }
+
+          predLabel.textContent = data.prediction.label;
+          predIndex.textContent = String(data.prediction.index);
+          setDrugWarning(data.prediction);
+          renderBars(data.probabilities || []);
+        } catch (e) {
+          showError("Tahmin alınamadı. " + (e?.message || String(e)));
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Tahmin Et";
+        }
+      });
+
+      checkHealth();
+      setInterval(checkHealth, 8000);
+    </script>
+  </body>
+</html>
+
