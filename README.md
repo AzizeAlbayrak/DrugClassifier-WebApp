@@ -66,7 +66,7 @@ python main.py
 ```
 ### 3. Uygulamaya Erişim
 
-Uygulama şu adreste çalışır:
+Uygulamayı çalıştırdıktan sonra aşağıdaki adresten erişebilirsiniz:
 
 http://localhost:8000
 
